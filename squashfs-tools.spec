@@ -2,12 +2,14 @@ Summary: Utility for the creation of squashfs filesystems
 Name: squashfs-tools
 Version: 4.0
 # cvs snapshot from cvs -d:pserver:anonymous@squashfs.cvs.sourceforge.net:/cvsroot/squashfs co squashfs on 2009-01-25
-Release: 3%{?dist}
+Release: 5%{?dist}
 License: GPLv2+
 Group: System Environment/Base
 URL: http://squashfs.sf.net
 Source0: http://cdnetworks-us-2.dl.sourceforge.net/project/squashfs/squashfs/squashfs%{version}/squashfs%{version}.tar.gz
 Patch0: squashfs-cflags.patch
+Patch1: fix-unsquashing-with-no-fragments.patch
+Patch2: squashfs-large-inode.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: zlib-devel
 
@@ -18,6 +20,8 @@ contains the utilities for manipulating squashfs filesystems.
 %prep
 %setup -q -n squashfs%{version}
 %patch0 -p1 -b .cflags
+%patch1 -p1 -b .unsquash-fixret
+%patch2 -p0 -b .large-inode
 
 %build
 pushd squashfs-tools
@@ -40,6 +44,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_sbindir}/unsquashfs
 
 %changelog
+* Fri Feb 18 2011 Alan Pevec <apevec@redhat.com> 4.0-5
+- Backport fix for 619020 (large inode issue) from 4.1 rhbz#676774
+
+* Mon Dec 20 2010 Kyle McMartin <kyle@redhat.com> - 4.0-4
+- Fix unsquashing v3 and v4 filesystems when the fragment table
+  is empty.
+- Resolves: rhbz#655952
+
 * Thu Feb 18 2010 Kyle McMartin <kyle@redhat.com> - 4.0-3
 - Add %{dist} tag to Release.
 - Use upstream tarball (instead of CVS snapshot.)
