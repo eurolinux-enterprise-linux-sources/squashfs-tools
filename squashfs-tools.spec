@@ -1,7 +1,7 @@
 Summary: Utility for the creation of squashfs filesystems
 Name: squashfs-tools
 Version: 4.3
-Release: 0.20.gitaae0aff4%{?dist}
+Release: 0.21.gitaae0aff4%{?dist}
 License: GPLv2+
 Group: System Environment/Base
 URL: http://squashfs.sourceforge.net/
@@ -9,10 +9,12 @@ URL: http://squashfs.sourceforge.net/
 # git clone git://git.kernel.org/pub/scm/fs/squashfs/squashfs-tools.git
 # cd squashfs-tools
 # git archive --format=tar --prefix=squashfs4.3/ aae0aff4f0b3081bd1dfc058c867033a89c11aac | gzip > squashfs4.3.tar.gz
-Source0: http://downloads.sourceforge.net/squashfs/squashfs%{version}.tar.gz
+Source0: squashfs%{version}.tar.gz
+#Source0: http://downloads.sourceforge.net/squashfs/squashfs%{version}.tar.gz
 # manpages from http://ftp.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4.2+20121212-1.debian.tar.xz
 Source1: mksquashfs.1
 Source2: unsquashfs.1
+Patch1: squashfs-tools-file_size-fix.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: zlib-devel
 BuildRequires: xz-devel
@@ -25,6 +27,7 @@ contains the utilities for manipulating squashfs filesystems.
 
 %prep
 %setup -q -n squashfs%{version}
+%patch1 -p1 -b .file_size
 
 %build
 pushd squashfs-tools
@@ -51,6 +54,9 @@ rm -rf %{buildroot}
 %{_sbindir}/unsquashfs
 
 %changelog
+* Wed Oct 08 2014 Jarod Wilson <jarod@redhat.com> - 4.3-0.21.gitaae0aff4
+- Fix corruption of last block of squashed images (rhbz 1052175)
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 4.3-0.20.gitaae0aff4
 - Mass rebuild 2014-01-24
 
